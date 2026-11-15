@@ -1,0 +1,8 @@
+[
+  {
+    "id": "posts",
+    "title": "Posts",
+    "url": "http://localhost:5174/src/module.ts",
+    "scope": "posts:read"
+  }
+]

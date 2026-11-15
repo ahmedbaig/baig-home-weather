@@ -1,0 +1,8 @@
+pnpm-lock.yaml
+**/dist
+**/build
+**/.svelte-kit
+playwright-report
+test-results
+docs/screenshots
+packages/ui/src/tokens/tokens.json
