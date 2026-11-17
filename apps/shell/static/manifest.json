@@ -1,14 +1,8 @@
 [
   {
-    "id": "posts",
-    "title": "Posts",
-    "url": "http://localhost:4174/module/module.js",
-    "scope": "posts:read"
-  },
-  {
-    "id": "tv",
-    "title": "TV",
-    "url": "http://localhost:4175/module/module.js",
-    "scope": "tv:watch"
+    "id": "weather",
+    "title": "Weather",
+    "url": "http://localhost:4181/module/module.js",
+    "scope": "weather:read"
   }
 ]

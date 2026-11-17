@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { apiBase } from '$lib/env';
   import { devScopes, moduleInfo } from '$lib/module-info';
-  import PostsModule from '$lib/PostsModule.svelte';
+  import WeatherModule from '$lib/WeatherModule.svelte';
   import { Session, canDevLogin, createApiClient, type ModuleContext } from '@dashboard/sdk';
   import { Button, DevLogin, EmptyState, Panel, Splash } from '@dashboard/ui';
   import { onMount } from 'svelte';
@@ -42,7 +42,7 @@
   </div>
 
   {#if ctx}
-    <PostsModule {ctx} />
+    <WeatherModule {ctx} />
   {:else if session.status === 'signed-out' && devLoginAllowed}
     <div class="center">
       <DevLogin scopes={devScopes} onlogin={(values) => session.devLogin(values)} />

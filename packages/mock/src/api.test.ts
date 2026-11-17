@@ -41,39 +41,30 @@ describe('mock api', () => {
     expect(body).toMatchObject({ requestId: 'req-1', errors: [{ code: 'E401-1' }] });
   });
 
-  it('paginates posts for a signed in reader', async () => {
-    const cookie = await login(['posts:read']);
-    const res = await fetch(`${base}/api/v1/posts?take=5&skip=5`, { headers: { cookie } });
-    const page = (await res.json()) as { items: unknown[] };
+  it('returns a 7 day forecast for a signed in reader', async () => {
+    const cookie = await login(['weather:read']);
+    const res = await fetch(`${base}/api/v1/weather/forecast?lat=-33.87&lon=151.21`, {
+      headers: { cookie }
+    });
+    const body = (await res.json()) as { latitude: number; daily: { time: string[] } };
 
     expect(res.status).toBe(200);
-    expect(page).toMatchObject({ take: 5, skip: 5, total: 12 });
-    expect(page.items).toHaveLength(5);
+    expect(body.latitude).toBe(-33.87);
+    expect(body.daily.time).toHaveLength(7);
   });
 
-  it('rejects short titles with field errors', async () => {
-    const cookie = await login(['posts:read', 'posts:write']);
-    const res = await fetch(`${base}/api/v1/posts`, {
-      method: 'POST',
-      headers: { cookie, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: 'ab', body: '', published: false })
+  it('rejects coordinates that are not numbers', async () => {
+    const cookie = await login(['weather:read']);
+    const res = await fetch(`${base}/api/v1/weather/forecast?lat=abc&lon=151`, {
+      headers: { cookie }
     });
-    const body = (await res.json()) as { errors: unknown[] };
 
     expect(res.status).toBe(422);
-    expect(body.errors[0]).toMatchObject({
-      code: 'E422-1',
-      fields: [{ field: 'title', rule: 'min' }]
-    });
   });
 
-  it('forbids writes without posts:write', async () => {
-    const cookie = await login(['posts:read']);
-    const res = await fetch(`${base}/api/v1/posts`, {
-      method: 'POST',
-      headers: { cookie, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: 'Hello there' })
-    });
+  it('forbids the forecast without weather:read', async () => {
+    const cookie = await login([]);
+    const res = await fetch(`${base}/api/v1/weather/forecast`, { headers: { cookie } });
 
     expect(res.status).toBe(403);
   });

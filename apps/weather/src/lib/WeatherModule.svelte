@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { hasScope, type ModuleContext } from '@dashboard/sdk';
-  import { Button, EmptyState, Panel, Toaster, createToaster } from '@dashboard/ui';
-  import { moduleInfo } from './module-info';
-  import PostsView from './posts/PostsView.svelte';
+  import { createApiClient, hasScope, type ModuleContext } from '@dashboard/sdk';
+  import { Button, EmptyState, Panel } from '@dashboard/ui';
+  import { moduleInfo, home } from './module-info';
+  import { forecastLoader } from './weather/api';
+  import WeatherView from './weather/WeatherView.svelte';
 
   interface Props {
     ctx: ModuleContext;
@@ -10,19 +11,18 @@
 
   let { ctx }: Props = $props();
 
-  const toaster = createToaster();
   const canRead = $derived(hasScope(ctx.user, moduleInfo.readScope));
-  const canWrite = $derived(hasScope(ctx.user, moduleInfo.writeScope));
+  const load = $derived(forecastLoader(createApiClient({ baseUrl: ctx.apiBase })));
 </script>
 
 <div class="module" data-module={moduleInfo.id} data-theme={ctx.theme}>
   {#if canRead}
-    <PostsView apiBase={ctx.apiBase} {canWrite} {toaster} />
+    <WeatherView {load} place={home} index={moduleInfo.index} />
   {:else}
     <Panel>
       <EmptyState
         label="403 — No access"
-        title="You can't see posts"
+        title="You can't see the weather"
         message={`Your session is missing the ${moduleInfo.readScope} scope. Ask an admin to add it.`}
       >
         {#snippet action()}
@@ -31,7 +31,6 @@
       </EmptyState>
     </Panel>
   {/if}
-  <Toaster store={toaster} />
 </div>
 
 <style>

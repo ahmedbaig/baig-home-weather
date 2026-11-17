@@ -1,8 +1,8 @@
 [
   {
-    "id": "posts",
-    "title": "Posts",
-    "url": "http://localhost:5174/src/module.ts",
-    "scope": "posts:read"
+    "id": "weather",
+    "title": "Weather",
+    "url": "http://localhost:5181/src/module.ts",
+    "scope": "weather:read"
   }
 ]

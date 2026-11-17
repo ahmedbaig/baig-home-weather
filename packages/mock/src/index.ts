@@ -6,6 +6,7 @@ import { createMockApi, type MockApiOptions } from './api.ts';
 
 export { createMockApi } from './api.ts';
 export type { MockApiOptions, User } from './api.ts';
+export { mockForecast, type Forecast } from './weather.ts';
 
 export interface MockPluginOptions extends MockApiOptions {
   enabled?: boolean;

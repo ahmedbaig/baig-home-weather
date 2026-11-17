@@ -12,7 +12,7 @@ import {
   sendJson,
   type RequestContext
 } from './http.ts';
-import { createPostStore, validate, type PostInput } from './posts.ts';
+import { mockForecast } from './weather.ts';
 
 export interface User {
   id: string;
@@ -36,19 +36,7 @@ function strings(value: unknown): string[] {
     : [];
 }
 
-function intParam(value: string | null, fallback: number, max: number): number {
-  const parsed = Number.parseInt(value ?? '', 10);
-  return Number.isFinite(parsed) && parsed >= 0 ? Math.min(parsed, max) : fallback;
-}
-
-function boolParam(value: string | null): boolean | undefined {
-  if (value === 'true') return true;
-  if (value === 'false') return false;
-  return undefined;
-}
-
 export function createMockApi(options: MockApiOptions = {}) {
-  const posts = createPostStore();
   const hub = createEventHub({ pingMs: options.pingMs });
   const sessions = new Map<string, User>();
 
@@ -91,12 +79,7 @@ export function createMockApi(options: MockApiOptions = {}) {
     sendEmpty(res);
   }
 
-  async function route(
-    req: IncomingMessage,
-    res: ServerResponse,
-    url: URL,
-    ctx: RequestContext
-  ): Promise<void> {
+  async function route(req: IncomingMessage, res: ServerResponse, url: URL): Promise<void> {
     const method = req.method ?? 'GET';
     const path = url.pathname.replace(/\/+$/, '');
 
@@ -118,50 +101,17 @@ export function createMockApi(options: MockApiOptions = {}) {
       return hub.subscribe(req, res, topics);
     }
 
-    if (path === '/api/v1/posts') {
-      if (method === 'GET') {
-        requireScope(req, 'posts:read');
-        return sendJson(
-          res,
-          200,
-          posts.list({
-            take: intParam(url.searchParams.get('take'), 20, 100),
-            skip: intParam(url.searchParams.get('skip'), 0, Number.MAX_SAFE_INTEGER),
-            published: boolParam(url.searchParams.get('published')),
-            q: url.searchParams.get('q') ?? undefined
-          })
-        );
+    if (path === '/api/v1/weather/forecast') {
+      if (method !== 'GET') throw errors.method();
+      requireScope(req, 'weather:read');
+      const latitude = Number(url.searchParams.get('lat') ?? -33.87);
+      const longitude = Number(url.searchParams.get('lon') ?? 151.21);
+      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+        throw errors.validation([
+          { field: 'lat', rule: 'number', message: 'lat and lon must be numbers' }
+        ]);
       }
-      if (method === 'POST') {
-        const user = requireScope(req, 'posts:write');
-        const input = validate(await readJson(req), false) as PostInput;
-        const post = posts.create(user.id, input);
-        hub.publish('posts', 'posts.created', post, ctx.correlationId);
-        return sendJson(res, 201, post);
-      }
-      throw errors.method();
-    }
-
-    const match = /^\/api\/v1\/posts\/([^/]+)$/.exec(path);
-    if (match?.[1]) {
-      const id = decodeURIComponent(match[1]);
-      if (method === 'GET') {
-        requireScope(req, 'posts:read');
-        return sendJson(res, 200, posts.get(id));
-      }
-      if (method === 'PATCH') {
-        requireScope(req, 'posts:write');
-        const post = posts.update(id, validate(await readJson(req), true));
-        hub.publish('posts', 'posts.updated', post, ctx.correlationId);
-        return sendJson(res, 200, post);
-      }
-      if (method === 'DELETE') {
-        requireScope(req, 'posts:write');
-        posts.remove(id);
-        hub.publish('posts', 'posts.deleted', { id }, ctx.correlationId);
-        return sendEmpty(res);
-      }
-      throw errors.method();
+      return sendJson(res, 200, mockForecast(latitude, longitude));
     }
 
     throw errors.route();
@@ -179,7 +129,7 @@ export function createMockApi(options: MockApiOptions = {}) {
     res.setHeader('X-Correlation-ID', ctx.correlationId);
 
     try {
-      await route(req, res, url, ctx);
+      await route(req, res, url);
     } catch (error) {
       if (error instanceof MockError) return sendError(res, ctx, error);
       sendError(

@@ -1,14 +1,8 @@
 [
   {
-    "id": "posts",
-    "title": "Posts",
-    "url": "https://posts.dashboard.example/module/module.js",
-    "scope": "posts:read"
-  },
-  {
-    "id": "tv",
-    "title": "TV",
-    "url": "https://tv.dashboard.example/module/module.js",
-    "scope": "tv:watch"
+    "id": "weather",
+    "title": "Weather",
+    "url": "https://weather.dashboard.example.com/module/module.js",
+    "scope": "weather:read"
   }
 ]

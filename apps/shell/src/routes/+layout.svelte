@@ -10,7 +10,7 @@
   let { children }: { children: Snippet } = $props();
 
   const SPLASH_MIN_MS = 600;
-  const devScopes = ['posts:read', 'posts:write', 'tv:watch'];
+  const devScopes = ['weather:read'];
   const shell = provideShell(new Shell(apiBase, manifestUrl));
   const devLoginAllowed = canDevLogin(location.hostname);
 
@@ -42,7 +42,7 @@
     <div class="center">
       <DevLogin
         scopes={devScopes}
-        selected={['posts:read', 'posts:write']}
+        selected={['weather:read']}
         onlogin={(values) => shell.session.devLogin(values)}
       />
     </div>

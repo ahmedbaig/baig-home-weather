@@ -1,5 +1,5 @@
 FROM node:24-alpine AS build
-ARG APP=example
+ARG APP=weather
 ARG PUBLIC_API_BASE=""
 ENV CI=1 \
     PUBLIC_API_BASE=${PUBLIC_API_BASE}
@@ -7,7 +7,7 @@ WORKDIR /repo
 RUN npm install -g pnpm@12.21.0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY apps/shell/package.json apps/shell/
-COPY apps/example/package.json apps/example/
+COPY apps/weather/package.json apps/weather/
 COPY packages/sdk/package.json packages/sdk/
 COPY packages/ui/package.json packages/ui/
 COPY packages/mock/package.json packages/mock/

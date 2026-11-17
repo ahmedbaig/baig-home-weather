@@ -1,5 +1,5 @@
 {
-  "name": "svelte-frontend-template",
+  "name": "baig-home-weather",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@12.21.0",
@@ -13,8 +13,7 @@
     "test": "pnpm -r --if-present test",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
-    "e2e": "playwright test",
-    "new-module": "sh scripts/new-module.sh"
+    "e2e": "playwright test"
   },
   "devDependencies": {
     "@eslint/js": "catalog:",

@@ -22,8 +22,8 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: 'pnpm --filter @dashboard/example preview',
-      url: 'http://localhost:4174',
+      command: 'pnpm --filter @dashboard/weather preview',
+      url: 'http://localhost:4181',
       env: mockEnv,
       reuseExistingServer: !ci,
       timeout: 120_000

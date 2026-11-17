@@ -1,15 +1,19 @@
 <script lang="ts">
-  import CurrentNow from '$lib/weather/CurrentNow.svelte';
+  import { home } from '$lib/module-info';
+  import { sampleLoader } from '$lib/weather/sample';
+  import WeatherView from '$lib/weather/WeatherView.svelte';
 </script>
 
+<svelte:head><title>Weather lab</title></svelte:head>
+
 <main class="lab">
-  <CurrentNow />
+  <WeatherView load={sampleLoader} place={home} />
 </main>
 
 <style>
   .lab {
-    max-width: 720px;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 32px var(--space-gutter);
+    padding: 32px var(--space-gutter) 64px;
   }
 </style>

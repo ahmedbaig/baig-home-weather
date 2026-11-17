@@ -55,7 +55,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       matrix:
-        app: [example, shell]
+        app: [weather, shell]
     steps:
       - uses: actions/checkout@v7
 
